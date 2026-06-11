@@ -1,0 +1,138 @@
+# =============================================================================
+# fin-rag-analyst — config/config.yaml
+# Central configuration. Override any value via environment variables.
+# LLM provider switch: gemini | groq | ollama
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# LLM Provider Configuration
+# Set `active` to switch providers without changing code.
+# ---------------------------------------------------------------------------
+llm:
+  active: "gemini"            # options: gemini | groq | ollama
+
+  gemini:
+    model: "gemini-1.5-flash-latest"
+    temperature: 0.1
+    max_tokens: 8192
+    # API key loaded from env: GEMINI_API_KEY
+
+  groq:
+    model: "llama-3.1-70b-versatile"
+    temperature: 0.1
+    max_tokens: 8192
+    # API key loaded from env: GROQ_API_KEY
+
+  ollama:
+    model: "llama3.1:8b"
+    base_url: "http://localhost:11434"
+    temperature: 0.1
+    max_tokens: 8192
+
+# ---------------------------------------------------------------------------
+# Embedding Model Configuration
+# dense  → sentence-transformers (local, no API cost)
+# sparse → fastembed BM42 (local)
+# ---------------------------------------------------------------------------
+embeddings:
+  dense:
+    model: "BAAI/bge-m3"
+    device: "cpu"             # swap to "cuda" if GPU available
+    batch_size: 32
+    normalize: true
+
+  sparse:
+    model: "Qdrant/bm42-all-minilm-l6-v2-attentions"
+    # fastembed handles download automatically
+
+# ---------------------------------------------------------------------------
+# Qdrant Vector Database
+# ---------------------------------------------------------------------------
+qdrant:
+  url: "http://localhost:6333"          # override with QDRANT_URL env var
+  api_key: null                          # set QDRANT_API_KEY for cloud tier
+  collection_name: "fin_documents"
+  vector_size: 1024                      # BGE-M3 output dimension
+  distance: "Cosine"
+
+  # Hybrid search retrieval settings
+  retrieval:
+    top_k: 10                            # candidates per search type
+    rerank_top_n: 5                      # final chunks after RRF reranking
+    rrf_k: 60                            # RRF constant (standard = 60)
+    score_threshold: 0.35
+
+# ---------------------------------------------------------------------------
+# Document Ingestion Settings
+# ---------------------------------------------------------------------------
+ingestion:
+  chunk_size: 1000
+  chunk_overlap: 150
+  supported_extensions:
+    - ".pdf"
+    - ".txt"
+    - ".docx"
+  metadata_fields:
+    - "ticker"
+    - "doc_type"              # sec_filing | earnings_transcript | research_note
+    - "filing_date"
+    - "company_name"
+    - "source_file"
+
+# ---------------------------------------------------------------------------
+# Observability — Langfuse
+# ---------------------------------------------------------------------------
+observability:
+  provider: "langfuse"        # options: langfuse | langsmith | none
+  langfuse:
+    host: "http://localhost:3000"
+    # Keys loaded from env: LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY
+    flush_at: 10
+    flush_interval: 5.0
+    enabled: true
+
+  langsmith:
+    # Keys loaded from env: LANGCHAIN_API_KEY
+    project: "fin-rag-analyst"
+    enabled: false
+
+# ---------------------------------------------------------------------------
+# Guardrails
+# ---------------------------------------------------------------------------
+guardrails:
+  provider: "nemo"            # options: nemo | guardrails_ai
+  config_path: "config/guardrails"
+  max_retries: 2              # retry loops before escalating to analyst
+
+# ---------------------------------------------------------------------------
+# LangGraph Agent Graph Settings
+# ---------------------------------------------------------------------------
+graph:
+  checkpointer: "sqlite"      # options: sqlite | postgres
+  sqlite_db_path: "./data/checkpoints.db"
+  postgres_url: null          # set POSTGRES_URL env var for production
+
+  # HITL timeout: seconds to wait for analyst approval before auto-escalation
+  hitl_timeout_seconds: 3600  # 1 hour
+
+# ---------------------------------------------------------------------------
+# Evaluation (Ragas + DeepEval)
+# ---------------------------------------------------------------------------
+evaluation:
+  dataset_path: "tests/golden_dataset.json"
+  output_path: "tests/eval_report.json"
+  thresholds:
+    faithfulness: 0.80
+    answer_relevancy: 0.75
+    context_recall: 0.70
+    hallucination: 0.15        # DeepEval — lower is better
+    contextual_precision: 0.75
+
+# ---------------------------------------------------------------------------
+# Streamlit UI
+# ---------------------------------------------------------------------------
+ui:
+  title: "Financial Market Research Analyst"
+  page_icon: "📊"
+  server_port: 8501
+  max_chat_history: 50
