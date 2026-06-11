@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment secrets — NEVER commit
+.env
+
+# Data (large files)
+data/raw/
+data/processed/
+data/checkpoints.db
+
+# Model cache (downloaded by sentence-transformers / fastembed)
+.cache/
+models/
+
+# Streamlit
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/postgres_data/
+
+# Eval outputs
+tests/eval_report.json
+
+# Notebooks
+notebooks/.ipynb_checkpoints/

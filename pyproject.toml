@@ -1,0 +1,103 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "fin-rag-analyst"
+version = "0.1.0"
+description = "Multi-Agent RAG Financial Market Research Analyst"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+authors = [
+    { name = "Your Name", email = "you@example.com" },
+]
+
+keywords = ["llmops", "rag", "langgraph", "finance", "multi-agent"]
+
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+]
+
+dependencies = [
+    # --- LangChain Ecosystem ---
+    "langchain>=0.2.16",
+    "langchain-community>=0.2.16",
+    "langchain-google-genai>=1.0.10",
+    "langchain-groq>=0.1.9",
+    "langchain-ollama>=0.1.3",
+    "langgraph>=0.2.28",
+    "langgraph-checkpoint-sqlite>=1.0.3",
+
+    # --- Vector DB ---
+    "qdrant-client>=1.11.0",
+
+    # --- Embeddings ---
+    "sentence-transformers>=3.1.1",
+    "fastembed>=0.3.6",           # sparse BM42 vectors
+
+    # --- Document Loading ---
+    "pypdf>=4.3.1",
+    "unstructured>=0.15.13",
+    "python-docx>=1.1.2",
+
+    # --- Observability ---
+    "langfuse>=2.53.0",
+
+    # --- Guardrails ---
+    "nemoguardrails>=0.9.1",
+
+    # --- Evaluation ---
+    "ragas>=0.1.21",
+    "deepeval>=1.4.5",
+
+    # --- API / Config ---
+    "pydantic>=2.9.2",
+    "pydantic-settings>=2.5.2",
+    "python-dotenv>=1.0.1",
+    "pyyaml>=6.0.2",
+    "httpx>=0.27.2",
+
+    # --- UI ---
+    "streamlit>=1.38.0",
+    "plotly>=5.24.1",
+
+    # --- Utilities ---
+    "tenacity>=9.0.0",
+    "rich>=13.9.1",
+    "loguru>=0.7.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.3",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.6.9",
+    "mypy>=1.11.2",
+    "pre-commit>=3.8.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "ui*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "--cov=src --cov-report=term-missing -v"
