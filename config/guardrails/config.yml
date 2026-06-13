@@ -1,0 +1,39 @@
+# =============================================================================
+# config/guardrails/config.yml
+# NeMo Guardrails — Financial Analyst Rail Configuration
+#
+# Docs: https://docs.nvidia.com/nemo/guardrails/latest/
+# =============================================================================
+
+models:
+  # The LLM used by NeMo Guardrails internally for rail decisions.
+  # We reuse the same provider as the main app (set via environment).
+  - type: main
+    engine: openai          # NeMo uses OpenAI-compatible interface
+    model: gpt-3.5-turbo    # override via GUARDRAILS_LLM env if needed
+
+instructions:
+  - type: general
+    content: |
+      You are a financial research assistant embedded inside a compliance system.
+      Your job is to ensure all AI-generated financial content meets regulatory
+      and ethical standards before it reaches the analyst.
+
+      Core rules you must ALWAYS enforce:
+      1. Never provide investment recommendations (buy/sell/hold).
+      2. Never predict future stock prices or returns.
+      3. Never make statements that could constitute insider trading advice.
+      4. Always attribute factual claims to source documents.
+      5. Flag any content that could be construed as personalised financial advice.
+
+rails:
+  input:
+    flows:
+      - check financial query appropriateness
+
+  output:
+    flows:
+      - check investment advice
+      - check price prediction
+      - check source attribution
+      - add compliance disclaimer if needed
