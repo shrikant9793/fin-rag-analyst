@@ -36,7 +36,7 @@ llm:
 # ---------------------------------------------------------------------------
 embeddings:
   dense:
-    model: "BAAI/bge-m3"
+    model: "all-MiniLM-L6-v2" #"BAAI/bge-m3"
     device: "cpu"             # swap to "cuda" if GPU available
     batch_size: 32
     normalize: true
@@ -51,7 +51,8 @@ embeddings:
 qdrant:
   url: "http://localhost:6333"          # override with QDRANT_URL env var
   api_key: null                          # set QDRANT_API_KEY for cloud tier
-  collection_name: "fin_documents"
+  #collection_name: "fin_documents"
+  collection_name: "financial_documents_v2"
   vector_size: 1024                      # BGE-M3 output dimension
   distance: "Cosine"
 

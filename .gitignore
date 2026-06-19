@@ -17,6 +17,7 @@ build/
 .venv/
 myenv/
 env/
+venv/
 ENV/
 myenv/
 
